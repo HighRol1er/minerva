@@ -1,4 +1,8 @@
 import { Module } from '@nestjs/common';
+import { UpbitClient } from './clients/upbit.client';
 
-@Module({})
+@Module({
+  providers: [UpbitClient],
+  exports: [UpbitClient],
+})
 export class CollectorModule {}

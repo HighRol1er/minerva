@@ -39,11 +39,3 @@ export const WEBSOCKET_ENDPOINTS = {
   BYBIT: 'wss://stream.bybit.com/v5/public/spot',
   KRAKEN: 'wss://ws.kraken.com/v2',
 } as const;
-
-// TODO: 옮겨야됨
-export const WEBSOCKET_CONFIG = {
-  RECONNECT: {
-    MAX_ATTEMPTS: 5,
-    DELAY: 1000, // 1초
-  },
-} as const;

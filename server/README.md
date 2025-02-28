@@ -1,2 +1,3 @@
-client : 3010
-server : 3000
+**TODO LIST**
+
+1. constants/exchange.ts (해결)
