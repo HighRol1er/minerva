@@ -116,11 +116,4 @@ export class ForexClient {
       throw error;
     }
   }
-
-  //*****************
-  //*  FOREX_DATA   *
-  //*****************
-  // public async fetchAllForexData(): Promise<ForexRate[]> {
-
-  // }
 }
