@@ -164,6 +164,9 @@ export class UpbitClient implements OnModuleInit {
     await this.connect();
   }
 
+  // *****************
+  // *  MARKET_DATA  *
+  // *****************
   public async collectUpbitMarket() {
     try {
       this.logger.log('Collecting Upbit tickers...');

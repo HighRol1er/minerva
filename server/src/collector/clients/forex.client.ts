@@ -3,6 +3,12 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { GOOGLE_FINANCE_URL } from 'src/common/constants';
 
+interface ForexRate {
+  currency_pair: string;
+  rate: number;
+  timestamp: Date;
+}
+
 @Injectable()
 export class ForexClient {
   private readonly logger = new Logger(ForexClient.name);
@@ -11,7 +17,7 @@ export class ForexClient {
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
   };
 
-  async fetchUsdKrwRate(): Promise<number> {
+  public async fetchUsdKrwRate(): Promise<number> {
     try {
       const { data } = await axios.get(GOOGLE_FINANCE_URL.USD_KRW, {
         headers: this.reqHeader,
@@ -31,7 +37,7 @@ export class ForexClient {
     }
   }
 
-  async fetchUsdJpyRate(): Promise<number> {
+  public async fetchUsdJpyRate(): Promise<number> {
     try {
       const { data } = await axios.get(GOOGLE_FINANCE_URL.USD_JPY, {
         headers: this.reqHeader,
@@ -51,7 +57,7 @@ export class ForexClient {
     }
   }
 
-  async fetchUsdEurRate(): Promise<number> {
+  public async fetchUsdEurRate(): Promise<number> {
     try {
       const { data } = await axios.get(GOOGLE_FINANCE_URL.USD_EUR, {
         headers: this.reqHeader,
@@ -71,7 +77,7 @@ export class ForexClient {
     }
   }
 
-  async fetchUsdGbpRate(): Promise<number> {
+  public async fetchUsdGbpRate(): Promise<number> {
     try {
       const { data } = await axios.get(GOOGLE_FINANCE_URL.USD_GBP, {
         headers: this.reqHeader,
@@ -91,7 +97,7 @@ export class ForexClient {
     }
   }
 
-  async fetchUsdCnyRate(): Promise<number> {
+  public async fetchUsdCnyRate(): Promise<number> {
     try {
       const { data } = await axios.get(GOOGLE_FINANCE_URL.USD_CNY, {
         headers: this.reqHeader,
@@ -110,4 +116,11 @@ export class ForexClient {
       throw error;
     }
   }
+
+  //*****************
+  //*  FOREX_DATA   *
+  //*****************
+  // public async fetchAllForexData(): Promise<ForexRate[]> {
+
+  // }
 }
