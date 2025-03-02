@@ -20,14 +20,13 @@ import { WebSocket } from 'ws';
 @Injectable()
 export class UpbitClient implements OnModuleInit {
   // exchange name
-  protected readonly exchangeName: string;
+  protected readonly exchangeName = EXCHANGE_NAME.UPBIT;
   // logger
-  protected readonly logger: Logger;
+  protected readonly logger = new Logger(UpbitClient.name);
   // websocket
   protected ws: WebSocket;
   // reconnect
   protected reconnectAttempts = 0;
-  // protected maxReconnectAttempts = WEBSOCKET_CONFIG.RECONNECT.MAX_ATTEMPTS;
   protected reconnectDelay = WEBSOCKET_CONFIG.RECONNECT.DELAY;
   // endpoint
   protected readonly wsEndpoint = WEBSOCKET_ENDPOINTS.UPBIT;
@@ -35,10 +34,7 @@ export class UpbitClient implements OnModuleInit {
   // market list
   protected marketList: string[] = []; // "BTC-KRW", "ETH-KRW", "XRP-KRW"
 
-  constructor(private readonly redisService: RedisService) {
-    this.exchangeName = EXCHANGE_NAME.UPBIT;
-    this.logger = new Logger(UpbitClient.name);
-  }
+  constructor(private readonly redisService: RedisService) {}
 
   async onModuleInit() {
     await this.fetchMarketData();
@@ -48,7 +44,7 @@ export class UpbitClient implements OnModuleInit {
   // *****************
   // *   REST_API    *
   // *****************
-  protected async fetchMarketData(): Promise<UpbitMarketResponse[]> {
+  public async fetchMarketData(): Promise<UpbitMarketResponse[]> {
     try {
       const { data } = await axios.get(this.apiEndpoint);
       this.marketList = krExchangeMarketFilter(data);

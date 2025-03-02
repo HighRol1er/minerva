@@ -7,6 +7,7 @@ import { RedisModule } from './redis/redis.module';
 import { ConfigModule } from './config/config.module';
 import { CollectorModule } from './collector/collector.module';
 import { DatabaseModule } from './database/database.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DatabaseModule } from './database/database.module';
     GatewayModule,
     CollectorModule,
     ForexModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
