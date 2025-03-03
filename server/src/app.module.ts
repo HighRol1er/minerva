@@ -7,6 +7,7 @@ import { ConfigModule } from './config/config.module';
 import { CollectorModule } from './collector/collector.module';
 import { DatabaseModule } from './database/database.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { MarketStreamModule } from './market-stream/market-stream.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     RedisModule,
     GatewayModule,
     CollectorModule,
+    MarketStreamModule,
   ],
   controllers: [AppController],
   providers: [AppService],
