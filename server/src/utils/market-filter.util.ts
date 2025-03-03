@@ -1,7 +1,4 @@
-import {
-  BinanceSymbol,
-  KrExchangeMarketResponse,
-} from 'src/collector/types/api-market-response.type';
+import { BinanceSymbol, KrExchangeMarketResponse } from 'src/collector/types';
 
 /**
  * KR Exchange Market Parser

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -6,41 +6,15 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-
-interface ActiveUsersData {
-  count: number;
-}
-
-interface ExchangeRateData {
-  rate: number;
-  timestamp: number;
-}
-
-// XXX: 수정 필요
-export interface ExchangeTickerData {
-  price: number;
-  timestamp: number;
-  volume: number;
-  change24h: number;
-}
-// XXX: 수정 필요
-export interface CoinPremiumData {
-  [symbol: `${string}-${string}`]: {
-    upbit?: ExchangeTickerData;
-    binance?: ExchangeTickerData;
-    bithumb?: ExchangeTickerData;
-    coinone?: ExchangeTickerData;
-    okx?: ExchangeTickerData;
-  };
-}
-
+import { ActiveUsersData } from './types/gateway.type';
+import { WS_EVENTS } from 'src/common/constants';
 @WebSocketGateway({
   cors: {
     origin: [process.env.CLIENT_URL_DEV, process.env.CLIENT_URL_PROD],
     credentials: true,
   },
-  transports: ['websocket'],
-  path: '/socket.io/',
+  transports: ['websocket'], // TODO: 추후 polling 적용
+  path: '/socket.io/', // ws://localhost:3000/socket.io/로 접속
   pingInterval: 1000,
   pingTimeout: 3000,
   maxHttpBufferSize: 1e6,
@@ -79,14 +53,25 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private emitActiveUsers() {
     const data: ActiveUsersData = { count: this.connectedClients.size };
-    this.server.emit('active-users', data);
+    this.server.emit(WS_EVENTS.ACTIVE_USERS, data);
   }
 
-  emitExchangeRate(data: ExchangeRateData) {
-    this.server.emit('exchange-rate', data);
+  // TODO: 데이터 어떻게 내보낼지? 타입 정해줘야함
+  emitForexRate(data: any) {
+    try {
+      this.server.emit(WS_EVENTS.FOREX_RATE, data);
+    } catch (error) {
+      this.logger.error('Failed to emit exchange rate:', error);
+    }
   }
 
-  emitCoinPremium(data: CoinPremiumData) {
-    this.server.emit('coin-premium', data);
+  // TODO: 이벤트 이름 별로임
+  // 코인데이터를 전송하는 이벤트가 될거같음 market-stream작성하면서 바꿀 예정
+  emitCoinPremium(data: any) {
+    try {
+      this.server.emit(WS_EVENTS.COIN_PREMIUM, data);
+    } catch (error) {
+      this.logger.error('Failed to emit coin premium:', error);
+    }
   }
 }
