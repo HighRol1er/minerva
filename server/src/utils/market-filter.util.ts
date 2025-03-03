@@ -1,4 +1,8 @@
-import { BinanceSymbol, KrExchangeMarketResponse } from 'src/types/exchange-http';
+import {
+  BinanceSymbol,
+  KrExchangeMarketResponse,
+} from 'src/collector/types/api-market-response.type';
+
 /**
  * KR Exchange Market Parser
  * @param data KR Exchange API로부터 받은 전체 마켓 데이터 배열
@@ -13,7 +17,9 @@ import { BinanceSymbol, KrExchangeMarketResponse } from 'src/types/exchange-http
  * // 결과: ["KRW-BTC", "KRW-XRP"]
  */
 export const krExchangeMarketFilter = (data: KrExchangeMarketResponse[]) => {
-  return data.filter(ticker => ticker.market.startsWith('KRW-')).map(ticker => ticker.market);
+  return data
+    .filter((ticker) => ticker.market.startsWith('KRW-'))
+    .map((ticker) => ticker.market);
 };
 
 /**
@@ -35,6 +41,8 @@ export const krExchangeMarketFilter = (data: KrExchangeMarketResponse[]) => {
  */
 
 export function binanceMarketFilter(data: BinanceSymbol[]): BinanceSymbol[] {
-  return data.filter(symbol => symbol.status === 'TRADING' && symbol.quoteAsset === 'USDT'); // USDT 페어만 필터링
+  return data.filter(
+    (symbol) => symbol.status === 'TRADING' && symbol.quoteAsset === 'USDT',
+  ); // USDT 페어만 필터링
   // .map(symbol => symbol.symbol);
 }

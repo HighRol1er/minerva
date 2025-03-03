@@ -10,11 +10,8 @@ import {
 import { DrizzleClient } from 'src/database/database.module';
 import { upbitSymbolSchema } from 'src/database/schema';
 import { RedisService } from 'src/redis/redis.service';
-import { UpbitMarketResponse } from 'src/types/exchange-http';
-import {
-  UpbitRawMessage,
-  UpbitSubscribeMessageType,
-} from 'src/types/exchange-ws';
+import { UpbitMarketResponse } from '../types/api-market-response.type';
+import { UpbitRawMessage, UpbitSubscribeMessageType } from '../types';
 import { krExchangeAssetSplitter } from 'src/utils/asset-splitter.util';
 import { krExchangeMarketFilter } from 'src/utils/market-filter.util';
 import { formatChangeRate } from 'src/utils/number.util';

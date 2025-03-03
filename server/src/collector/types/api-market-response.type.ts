@@ -42,5 +42,3 @@ export interface BinanceSymbol {
   baseAsset: string;
   quoteAsset: string;
 }
-
-export type ExchangeMarketResponse = UpbitMarketResponse | BithumbMarketResponse | BinanceSymbol;
