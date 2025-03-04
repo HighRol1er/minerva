@@ -67,11 +67,11 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // TODO: 이벤트 이름 별로임
   // 코인데이터를 전송하는 이벤트가 될거같음 market-stream작성하면서 바꿀 예정
-  emitCoinPremium(data: ConsolidatedMarketData) {
+  emitConsolidatedMarketData(data: ConsolidatedMarketData) {
     try {
-      this.server.emit(WS_EVENTS.COIN_PREMIUM, data);
+      this.server.emit(WS_EVENTS.CONSOLIDATED_MARKET_DATA, data);
     } catch (error) {
-      this.logger.error('Failed to emit coin premium:', error);
+      this.logger.error('Failed to emit consolidated market data:', error);
     }
   }
 }

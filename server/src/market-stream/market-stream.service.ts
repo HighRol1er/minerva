@@ -75,12 +75,12 @@ export class MarketStreamService implements OnModuleInit {
       }
       // Cache the premium data
       await this.redisService.set(
-        REDIS_KEY.COIN_PREMIUM_KEY,
+        REDIS_KEY.CONSOLIDATED_MARKET_DATA_KEY,
         JSON.stringify(consolidatedMarketData),
       );
 
       // Emit the consolidated data
-      this.appGateway.emitCoinPremium(consolidatedMarketData);
+      this.appGateway.emitConsolidatedMarketData(consolidatedMarketData);
     } catch (error) {
       this.logger.error('Error processing market data:', error);
     }
