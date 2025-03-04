@@ -120,6 +120,8 @@ export class UpbitClient implements OnModuleInit {
 
       const filteredMessage = {
         exchange: EXCHANGE_NAME.UPBIT,
+        baseAsset,
+        quoteAsset,
         symbol: rawMessage.cd,
         currentPrice: rawMessage.tp,
         changeRate: formatChangeRate(rawMessage.scr),

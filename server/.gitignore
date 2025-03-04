@@ -75,3 +75,5 @@ out/
 docker-compose.prod.yml
 
 
+# Redis 
+dump.rdb

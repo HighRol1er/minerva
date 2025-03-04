@@ -36,8 +36,8 @@ export class CollectorService {
   }
 
   // TODO: 현재 Redis에 저장 뿐 아니라 boardcast도 하고 있어서 추후 리팩토링 해야 함
-  // @Cron(CronExpression.EVERY_10_SECONDS) // TEST
   // @Cron('*/60 * * * * *') // PROD
+  @Cron(CronExpression.EVERY_10_SECONDS) // TEST
   async collectForexRate() {
     try {
       const exchangeRates = await Promise.allSettled([

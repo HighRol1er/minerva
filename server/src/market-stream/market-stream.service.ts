@@ -6,6 +6,7 @@ import { upbitSymbolSchema } from 'src/database/schema/upbit';
 import { Interval } from '@nestjs/schedule';
 import { REDIS_KEY } from 'src/common/constants';
 import { AppGateway } from 'src/gateway/app.gateway';
+import { ConsolidatedMarketData } from 'src/gateway/types/gateway.type';
 @Injectable()
 export class MarketStreamService implements OnModuleInit {
   private readonly logger = new Logger(MarketStreamService.name);
@@ -19,10 +20,10 @@ export class MarketStreamService implements OnModuleInit {
 
   async onModuleInit() {
     // 개발 환경에서는 Redis 체크 건너뛰기
-    if (this.configService.get('NODE_ENV') === 'development') {
-      this.logger.log('Development mode - skipping Redis connection check');
-      return;
-    }
+    // if (this.configService.get('NODE_ENV') === 'development') {
+    //   this.logger.log('Development mode - skipping Redis connection check');
+    //   return;
+    // }
 
     try {
       const isConnected = await this.redisService.ping();
@@ -39,7 +40,8 @@ export class MarketStreamService implements OnModuleInit {
   @Interval(1000)
   async processMarketData() {
     try {
-      const premiumData = {};
+      // XXX: 수정 급함
+      const consolidatedMarketData: ConsolidatedMarketData = {};
 
       // Get all ticker data from Redis
       const upbitKeys = await this.redisService.getKeys(REDIS_KEY.UPBIT_KEY);
@@ -49,28 +51,36 @@ export class MarketStreamService implements OnModuleInit {
         const data = await this.redisService.get(key);
         if (!data) continue;
 
-        const tickerData = JSON.parse(data);
-        const symbol = tickerData.baseToken;
+        const symbolData = JSON.parse(data);
+        // console.log(symbolData);
 
-        if (!premiumData[`${symbol}-${tickerData.quoteToken}`]) {
-          premiumData[`${symbol}-${tickerData.quoteToken}`] = {};
+        if (
+          !consolidatedMarketData[
+            `${symbolData.baseAsset}-${symbolData.quoteAsset}`
+          ]
+        ) {
+          consolidatedMarketData[
+            `${symbolData.baseAsset}-${symbolData.quoteAsset}`
+          ] = {};
         }
 
-        premiumData[`${symbol}-${tickerData.quoteToken}`].upbit = {
-          price: tickerData.price,
-          timestamp: tickerData.timestamp,
-          volume: tickerData.volume,
-          change24h: tickerData.change24h,
+        consolidatedMarketData[
+          `${symbolData.baseAsset}-${symbolData.quoteAsset}`
+        ].upbit = {
+          price: symbolData.currentPrice,
+          volume: symbolData.tradeVolume,
+          change24h: symbolData.changeRate,
+          timestamp: symbolData.timestamp,
         };
       }
       // Cache the premium data
       await this.redisService.set(
         REDIS_KEY.COIN_PREMIUM_KEY,
-        JSON.stringify(premiumData),
+        JSON.stringify(consolidatedMarketData),
       );
 
       // Emit the consolidated data
-      this.appGateway.emitCoinPremium(premiumData);
+      this.appGateway.emitCoinPremium(consolidatedMarketData);
     } catch (error) {
       this.logger.error('Error processing market data:', error);
     }

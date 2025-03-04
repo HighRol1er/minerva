@@ -6,7 +6,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ActiveUsersData } from './types/gateway.type';
+import { ActiveUsersData, ConsolidatedMarketData } from './types/gateway.type';
 import { WS_EVENTS } from 'src/common/constants';
 import { ForexRate } from 'src/collector/types';
 @WebSocketGateway({
@@ -67,7 +67,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // TODO: 이벤트 이름 별로임
   // 코인데이터를 전송하는 이벤트가 될거같음 market-stream작성하면서 바꿀 예정
-  emitCoinPremium(data: any) {
+  emitCoinPremium(data: ConsolidatedMarketData) {
     try {
       this.server.emit(WS_EVENTS.COIN_PREMIUM, data);
     } catch (error) {

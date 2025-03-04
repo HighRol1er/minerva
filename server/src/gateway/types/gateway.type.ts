@@ -9,13 +9,13 @@ export interface ExchangeRateData {
 
 // TODO: 수정 필요
 export interface ExchangeSymbolData {
-  price: number;
-  volume: number;
-  change24h: number;
-  timestamp: number;
+  price: number | string;
+  volume: number | string;
+  change24h: number | string;
+  timestamp: number | string;
 }
 // TODO: 수정 필요
-export interface CoinPremiumData {
+export interface ConsolidatedMarketData {
   [symbol: `${string}-${string}`]: {
     upbit?: ExchangeSymbolData;
     binance?: ExchangeSymbolData;
