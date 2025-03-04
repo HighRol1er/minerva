@@ -71,4 +71,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 .next/
 out/
 
+# Docker
+docker-compose.prod.yml
+
 

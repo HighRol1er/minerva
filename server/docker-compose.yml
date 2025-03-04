@@ -15,7 +15,7 @@ services:
       - POSTGRES_PORT=${POSTGRES_PORT:-5432}
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-minerva_dev}
+      - POSTGRES_DB=${POSTGRES_DB:-minerva}
       - NODE_OPTIONS="--max-old-space-size=1024"
       - COINMARKETCAP_API_KEY=${COINMARKETCAP_API_KEY:-}
     env_file:
@@ -53,7 +53,7 @@ services:
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-minerva_dev}
+      - POSTGRES_DB=${POSTGRES_DB:-minerva}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
