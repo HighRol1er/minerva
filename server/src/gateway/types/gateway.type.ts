@@ -10,9 +10,9 @@ export interface ExchangeRateData {
 // TODO: 수정 필요
 export interface ExchangeSymbolData {
   price: number;
-  timestamp: number;
   volume: number;
   change24h: number;
+  timestamp: number;
 }
 // TODO: 수정 필요
 export interface CoinPremiumData {

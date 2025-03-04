@@ -4,12 +4,14 @@ import { ConfigService } from '@nestjs/config';
 import { DrizzleClient } from 'src/database/database.module';
 import { upbitSymbolSchema } from 'src/database/schema/upbit';
 import { Interval } from '@nestjs/schedule';
-
+import { REDIS_KEY } from 'src/common/constants';
+import { AppGateway } from 'src/gateway/app.gateway';
 @Injectable()
 export class MarketStreamService implements OnModuleInit {
   private readonly logger = new Logger(MarketStreamService.name);
 
   constructor(
+    private readonly appGateway: AppGateway,
     private readonly redisService: RedisService,
     private readonly configService: ConfigService,
     @Inject('DATABASE') private readonly db: typeof DrizzleClient,
@@ -34,45 +36,45 @@ export class MarketStreamService implements OnModuleInit {
     }
   }
 
-  // @Interval(1000)
-  // async processMarketData() {
-  //   try {
-  //     const premiumData: CoinPremiumData = {};
+  @Interval(1000)
+  async processMarketData() {
+    try {
+      const premiumData = {};
 
-  //     // Get all ticker data from Redis
-  //     const upbitKeys = await this.redisService.getKeys('ticker-upbit-*');
+      // Get all ticker data from Redis
+      const upbitKeys = await this.redisService.getKeys(REDIS_KEY.UPBIT_KEY);
 
-  //     // Process Upbit data
-  //     for (const key of upbitKeys) {
-  //       const data = await this.redisService.get(key);
-  //       if (!data) continue;
+      // Process Upbit data
+      for (const key of upbitKeys) {
+        const data = await this.redisService.get(key);
+        if (!data) continue;
 
-  //       const tickerData = JSON.parse(data);
-  //       const symbol = tickerData.baseToken;
+        const tickerData = JSON.parse(data);
+        const symbol = tickerData.baseToken;
 
-  //       if (!premiumData[`${symbol}-${tickerData.quoteToken}`]) {
-  //         premiumData[`${symbol}-${tickerData.quoteToken}`] = {};
-  //       }
+        if (!premiumData[`${symbol}-${tickerData.quoteToken}`]) {
+          premiumData[`${symbol}-${tickerData.quoteToken}`] = {};
+        }
 
-  //       premiumData[`${symbol}-${tickerData.quoteToken}`].upbit = {
-  //         price: tickerData.price,
-  //         timestamp: tickerData.timestamp,
-  //         volume: tickerData.volume,
-  //         change24h: tickerData.change24h,
-  //       };
-  //     }
-  //     // Cache the premium data
-  //     await this.redisService.set(
-  //       this.PREMIUM_CACHE_KEY,
-  //       JSON.stringify(premiumData),
-  //     );
+        premiumData[`${symbol}-${tickerData.quoteToken}`].upbit = {
+          price: tickerData.price,
+          timestamp: tickerData.timestamp,
+          volume: tickerData.volume,
+          change24h: tickerData.change24h,
+        };
+      }
+      // Cache the premium data
+      await this.redisService.set(
+        REDIS_KEY.COIN_PREMIUM_KEY,
+        JSON.stringify(premiumData),
+      );
 
-  //     // Emit the consolidated data
-  //     this.appGateway.emitCoinPremium(premiumData);
-  //   } catch (error) {
-  //     this.logger.error('Error processing market data:', error);
-  //   }
-  // }
+      // Emit the consolidated data
+      this.appGateway.emitCoinPremium(premiumData);
+    } catch (error) {
+      this.logger.error('Error processing market data:', error);
+    }
+  }
 
   async getMarketsFromDB() {
     try {

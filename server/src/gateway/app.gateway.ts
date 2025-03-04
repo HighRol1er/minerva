@@ -8,6 +8,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { ActiveUsersData } from './types/gateway.type';
 import { WS_EVENTS } from 'src/common/constants';
+import { ForexRate } from 'src/collector/types';
 @WebSocketGateway({
   cors: {
     origin: [process.env.CLIENT_URL_DEV, process.env.CLIENT_URL_PROD],
@@ -56,8 +57,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit(WS_EVENTS.ACTIVE_USERS, data);
   }
 
-  // TODO: 데이터 어떻게 내보낼지? 타입 정해줘야함
-  emitForexRate(data: any) {
+  emitForexRate(data: ForexRate) {
     try {
       this.server.emit(WS_EVENTS.FOREX_RATE, data);
     } catch (error) {
