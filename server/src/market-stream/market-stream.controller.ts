@@ -5,10 +5,10 @@ import { MarketStreamService } from './market-stream.service';
 export class MarketStreamController {
   constructor(private readonly marketStreamService: MarketStreamService) {}
 
-  // @Get('market')
-  // async getMarket() {
-  //   return this.marketStreamService.getMarket();
-  // }
+  @Get('market')
+  async getMarket() {
+    return this.marketStreamService.getMarkets();
+  }
 
   // @Get('forex-rate')
   // async getForexRate() {
