@@ -3,12 +3,6 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { GOOGLE_FINANCE_URL } from 'src/common/constants';
 
-interface ForexRate {
-  currency_pair: string;
-  rate: number;
-  timestamp: Date;
-}
-
 @Injectable()
 export class ForexClient {
   private readonly logger = new Logger(ForexClient.name);
@@ -27,7 +21,7 @@ export class ForexClient {
       const rate = parseFloat(rateText.replace(/,/g, ''));
 
       if (isNaN(rate)) {
-        this.logger.error('Invalid rate format');
+        this.logger.error('Invalid rate format for USD/KRW');
       }
 
       return rate;
@@ -47,7 +41,7 @@ export class ForexClient {
       const rate = parseFloat(rateText.replace(/,/g, ''));
 
       if (isNaN(rate)) {
-        this.logger.error('Invalid rate format');
+        this.logger.error('Invalid rate format for USD/JPY');
       }
 
       return rate;
@@ -67,7 +61,7 @@ export class ForexClient {
       const rate = parseFloat(rateText.replace(/,/g, ''));
 
       if (isNaN(rate)) {
-        this.logger.error('Invalid rate format');
+        this.logger.error('Invalid rate format for USD/EUR');
       }
 
       return rate;
@@ -87,7 +81,7 @@ export class ForexClient {
       const rate = parseFloat(rateText.replace(/,/g, ''));
 
       if (isNaN(rate)) {
-        this.logger.error('Invalid rate format');
+        this.logger.error('Invalid rate format for USD/GBP');
       }
 
       return rate;
@@ -107,7 +101,7 @@ export class ForexClient {
       const rate = parseFloat(rateText.replace(/,/g, ''));
 
       if (isNaN(rate)) {
-        this.logger.error('Invalid rate format');
+        this.logger.error('Invalid rate format for USD/CNY');
       }
 
       return rate;
@@ -116,4 +110,6 @@ export class ForexClient {
       throw error;
     }
   }
+
+  // TODO: usd/usdt usd/aud usd/cad추가 예정
 }

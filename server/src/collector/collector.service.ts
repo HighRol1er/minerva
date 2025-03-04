@@ -6,6 +6,8 @@ import { forexRatesSchema } from 'src/database/schema';
 import { RedisService } from 'src/redis/redis.service';
 import { ForexClient } from './clients/forex.client';
 import { UpbitClient } from './clients/upbit.client';
+import { ForexRate } from './types';
+import { AppGateway } from 'src/gateway/app.gateway';
 @Injectable()
 export class CollectorService {
   private readonly logger = new Logger(CollectorService.name);
@@ -13,6 +15,7 @@ export class CollectorService {
   constructor(
     @Inject('DATABASE') private readonly db: typeof DrizzleClient,
     private readonly redisService: RedisService,
+    private readonly appGateway: AppGateway,
     private readonly forexClient: ForexClient,
     private readonly upbitClient: UpbitClient,
   ) {}
@@ -44,19 +47,26 @@ export class CollectorService {
         this.forexClient.fetchUsdCnyRate(),
       ]);
 
-      // 실패한 항목 제외하고 Redis에 저장
       const redisPromises: Promise<void>[] = [];
       const currencies = ['krw', 'jpy', 'eur', 'gbp', 'cny'];
+      const forexData: ForexRate = {
+        usdKrw: null,
+        usdJpy: null,
+        usdEur: null,
+        usdGbp: null,
+        usdCny: null,
+        timestamp: Date.now(),
+      };
 
       exchangeRates.forEach((result, index) => {
         if (result.status === 'fulfilled') {
+          const rate = result.value.toString();
           redisPromises.push(
-            this.redisService.set(
-              `${currencies[index]}-usd-rate`,
-              result.value.toString(),
-              300,
-            ),
+            this.redisService.set(`usd-${currencies[index]}-rate`, rate, 300),
           );
+          forexData[
+            `usd${currencies[index].replace(/^[a-z]/, (c) => c.toUpperCase())}`
+          ] = rate;
         } else {
           this.logger.warn(
             `Failed to fetch ${currencies[index]} rate: ${result.reason}`,
@@ -65,13 +75,13 @@ export class CollectorService {
       });
 
       await Promise.all(redisPromises);
-
-      this.logger.log('Successfully collected and cached exchange rates');
+      this.appGateway.emitForexRate(forexData);
     } catch (error) {
       this.logger.error(
         'Unexpected error occurred while collecting exchange rate',
         error.stack || error,
       );
+      throw error;
     }
   }
 

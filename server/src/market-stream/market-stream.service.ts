@@ -3,6 +3,7 @@ import { RedisService } from 'src/redis/redis.service';
 import { ConfigService } from '@nestjs/config';
 import { DrizzleClient } from 'src/database/database.module';
 import { upbitSymbolSchema } from 'src/database/schema/upbit';
+import { Interval } from '@nestjs/schedule';
 
 @Injectable()
 export class MarketStreamService implements OnModuleInit {
@@ -33,13 +34,50 @@ export class MarketStreamService implements OnModuleInit {
     }
   }
 
-  async getMarkets() {
+  // @Interval(1000)
+  // async processMarketData() {
+  //   try {
+  //     const premiumData: CoinPremiumData = {};
+
+  //     // Get all ticker data from Redis
+  //     const upbitKeys = await this.redisService.getKeys('ticker-upbit-*');
+
+  //     // Process Upbit data
+  //     for (const key of upbitKeys) {
+  //       const data = await this.redisService.get(key);
+  //       if (!data) continue;
+
+  //       const tickerData = JSON.parse(data);
+  //       const symbol = tickerData.baseToken;
+
+  //       if (!premiumData[`${symbol}-${tickerData.quoteToken}`]) {
+  //         premiumData[`${symbol}-${tickerData.quoteToken}`] = {};
+  //       }
+
+  //       premiumData[`${symbol}-${tickerData.quoteToken}`].upbit = {
+  //         price: tickerData.price,
+  //         timestamp: tickerData.timestamp,
+  //         volume: tickerData.volume,
+  //         change24h: tickerData.change24h,
+  //       };
+  //     }
+  //     // Cache the premium data
+  //     await this.redisService.set(
+  //       this.PREMIUM_CACHE_KEY,
+  //       JSON.stringify(premiumData),
+  //     );
+
+  //     // Emit the consolidated data
+  //     this.appGateway.emitCoinPremium(premiumData);
+  //   } catch (error) {
+  //     this.logger.error('Error processing market data:', error);
+  //   }
+  // }
+
+  async getMarketsFromDB() {
     try {
       const [upbitData] = await Promise.all([
         this.db.select().from(upbitSymbolSchema),
-        // this.db.select().from(exchange_bithumb),
-        // this.db.select().from(exchange_binance),
-        // this.db.select().from(exchange_okx),
       ]);
 
       return {
@@ -50,6 +88,23 @@ export class MarketStreamService implements OnModuleInit {
       };
     } catch (error) {
       this.logger.error('Failed to get markets:', error);
+      throw error;
+    }
+  }
+
+  async getForexRateFromRedis() {
+    try {
+      const [usdKrw, usdJpy, usdEur, usdGbp, usdCny] = await Promise.all([
+        this.redisService.get('usd-krw-rate'),
+        this.redisService.get('usd-jpy-rate'),
+        this.redisService.get('usd-eur-rate'),
+        this.redisService.get('usd-gbp-rate'),
+        this.redisService.get('usd-cny-rate'),
+      ]);
+
+      return { usdKrw, usdJpy, usdEur, usdGbp, usdCny };
+    } catch (error) {
+      this.logger.error('Failed to get forex rate:', error);
       throw error;
     }
   }

@@ -8,7 +8,7 @@ export interface ExchangeRateData {
 }
 
 // TODO: 수정 필요
-export interface ExchangeTickerData {
+export interface ExchangeSymbolData {
   price: number;
   timestamp: number;
   volume: number;
@@ -17,10 +17,10 @@ export interface ExchangeTickerData {
 // TODO: 수정 필요
 export interface CoinPremiumData {
   [symbol: `${string}-${string}`]: {
-    upbit?: ExchangeTickerData;
-    binance?: ExchangeTickerData;
-    bithumb?: ExchangeTickerData;
-    coinone?: ExchangeTickerData;
-    okx?: ExchangeTickerData;
+    upbit?: ExchangeSymbolData;
+    binance?: ExchangeSymbolData;
+    bithumb?: ExchangeSymbolData;
+    coinone?: ExchangeSymbolData;
+    okx?: ExchangeSymbolData;
   };
 }
