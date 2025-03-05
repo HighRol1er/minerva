@@ -3,7 +3,7 @@ import React from "react";
 export default function Home() {
   return (
     <React.Fragment>
-      <div className="bg-blue-100">Home</div>
+      <div className="flex min-h-screen w-full">Home</div>
     </React.Fragment>
   );
 }

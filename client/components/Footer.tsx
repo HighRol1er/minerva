@@ -1,10 +1,9 @@
-import { Switch } from "@/components/ui/switch";
 import React from "react";
 
 export default function Footer() {
   return (
-    <React.Fragment>
-      <div className="bg-red-100">Footer</div>
-    </React.Fragment>
+    <footer className="w-full bg-slate-800 p-1 flex justify-center items-center">
+      © Minerva 2025. All rights reserved. contact : hunterjoe9999@gmail.com
+    </footer>
   );
 }
