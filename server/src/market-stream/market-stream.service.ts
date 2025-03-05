@@ -9,6 +9,8 @@ import { AppGateway } from 'src/gateway/app.gateway';
 import { ConsolidatedMarketData } from 'src/gateway/types/gateway.type';
 import { STALE_TIME } from 'src/common/constants/stale-time';
 import { FilterdMessageType } from 'src/collector/types';
+import { bithumbSymbolSchema } from 'src/database/schema/bithumb';
+import { binanceSymbolSchema } from 'src/database/schema/binance';
 @Injectable()
 export class MarketStreamService implements OnModuleInit {
   private readonly logger = new Logger(MarketStreamService.name);
@@ -50,12 +52,8 @@ export class MarketStreamService implements OnModuleInit {
       const consolidatedMarketData: ConsolidatedMarketData = {};
       // Get all ticker data from Redis
       const upbitKeys = await this.redisService.getKeys(REDIS_KEY.UPBIT_KEY);
-      const bithumbKeys = await this.redisService.getKeys(
-        REDIS_KEY.BITHUMB_KEY,
-      );
-      const binanceKeys = await this.redisService.getKeys(
-        REDIS_KEY.BINANCE_KEY,
-      );
+      const bithumbKeys = await this.redisService.getKeys(REDIS_KEY.BITHUMB_KEY);
+      const binanceKeys = await this.redisService.getKeys(REDIS_KEY.BINANCE_KEY);
       // Process Upbit data
       for (const key of upbitKeys) {
         const data = await this.redisService.get(key);
@@ -67,28 +65,17 @@ export class MarketStreamService implements OnModuleInit {
         // 현재로서는 이렇게 냅두고 배포했을 때 어떻게 될지 좀 지켜봐야겠음
         // 이 로직으로 충분한지 아니면 더 세세하게 해야될지.
         // 지금은 보류
-        if (
-          currentTimestamp - Number(upbitSymbolData.timestamp) >
-          STALE_TIME.HALF_DAY
-        ) {
+        if (currentTimestamp - Number(upbitSymbolData.timestamp) > STALE_TIME.HALF_DAY) {
           await this.redisService.del(key);
           this.logger.log(`Deleted stale data for ${key}`);
           continue;
         }
 
-        if (
-          !consolidatedMarketData[
-            `${upbitSymbolData.baseAsset}-${upbitSymbolData.quoteAsset}`
-          ]
-        ) {
-          consolidatedMarketData[
-            `${upbitSymbolData.baseAsset}-${upbitSymbolData.quoteAsset}`
-          ] = {};
+        if (!consolidatedMarketData[`${upbitSymbolData.baseAsset}-${upbitSymbolData.quoteAsset}`]) {
+          consolidatedMarketData[`${upbitSymbolData.baseAsset}-${upbitSymbolData.quoteAsset}`] = {};
         }
 
-        consolidatedMarketData[
-          `${upbitSymbolData.baseAsset}-${upbitSymbolData.quoteAsset}`
-        ].upbit = {
+        consolidatedMarketData[`${upbitSymbolData.baseAsset}-${upbitSymbolData.quoteAsset}`].upbit = {
           price: upbitSymbolData.currentPrice,
           volume: upbitSymbolData.tradeVolume,
           change24h: upbitSymbolData.changeRate,
@@ -103,39 +90,50 @@ export class MarketStreamService implements OnModuleInit {
         const bithumbSymbolData: FilterdMessageType = JSON.parse(data);
         if (!bithumbSymbolData) continue;
 
-        if (
-          currentTimestamp - Number(bithumbSymbolData.timestamp) >
-          STALE_TIME.HALF_DAY
-        ) {
+        if (currentTimestamp - Number(bithumbSymbolData.timestamp) > STALE_TIME.HALF_DAY) {
           await this.redisService.del(key);
           this.logger.log(`Deleted stale data for ${key}`);
           continue;
         }
 
-        if (
-          !consolidatedMarketData[
-            `${bithumbSymbolData.baseAsset}-${bithumbSymbolData.quoteAsset}`
-          ]
-        ) {
-          consolidatedMarketData[
-            `${bithumbSymbolData.baseAsset}-${bithumbSymbolData.quoteAsset}`
-          ] = {};
+        if (!consolidatedMarketData[`${bithumbSymbolData.baseAsset}-${bithumbSymbolData.quoteAsset}`]) {
+          consolidatedMarketData[`${bithumbSymbolData.baseAsset}-${bithumbSymbolData.quoteAsset}`] = {};
         }
 
-        consolidatedMarketData[
-          `${bithumbSymbolData.baseAsset}-${bithumbSymbolData.quoteAsset}`
-        ].bithumb = {
+        consolidatedMarketData[`${bithumbSymbolData.baseAsset}-${bithumbSymbolData.quoteAsset}`].bithumb = {
           price: bithumbSymbolData.currentPrice,
           volume: bithumbSymbolData.tradeVolume,
           change24h: bithumbSymbolData.changeRate,
           timestamp: bithumbSymbolData.timestamp,
         };
       }
+      // process Binance data
+      for (const key of binanceKeys) {
+        const data = await this.redisService.get(key);
+        if (!data) continue;
 
-      await this.redisService.set(
-        REDIS_KEY.CONSOLIDATED_MARKET_DATA_KEY,
-        JSON.stringify(consolidatedMarketData),
-      );
+        const binanceSymbolData: FilterdMessageType = JSON.parse(data);
+        if (!binanceSymbolData) continue;
+
+        if (currentTimestamp - Number(binanceSymbolData.timestamp) > STALE_TIME.HALF_DAY) {
+          await this.redisService.del(key);
+          this.logger.log(`Deleted stale data for ${key}`);
+          continue;
+        }
+
+        if (!consolidatedMarketData[`${binanceSymbolData.baseAsset}-${binanceSymbolData.quoteAsset}`]) {
+          consolidatedMarketData[`${binanceSymbolData.baseAsset}-${binanceSymbolData.quoteAsset}`] = {};
+        }
+
+        consolidatedMarketData[`${binanceSymbolData.baseAsset}-${binanceSymbolData.quoteAsset}`].binance = {
+          price: binanceSymbolData.currentPrice,
+          volume: binanceSymbolData.tradeVolume,
+          change24h: binanceSymbolData.changeRate,
+          timestamp: binanceSymbolData.timestamp,
+        };
+      }
+
+      await this.redisService.set(REDIS_KEY.CONSOLIDATED_MARKET_DATA_KEY, JSON.stringify(consolidatedMarketData));
 
       // Emit the consolidated data
       this.appGateway.emitConsolidatedMarketData(consolidatedMarketData);
@@ -146,15 +144,16 @@ export class MarketStreamService implements OnModuleInit {
 
   async getMarketsFromDB() {
     try {
-      const [upbitData] = await Promise.all([
+      const [upbitData, bithumbData, binanceData] = await Promise.all([
         this.db.select().from(upbitSymbolSchema),
+        this.db.select().from(bithumbSymbolSchema),
+        this.db.select().from(binanceSymbolSchema),
       ]);
 
       return {
         upbit: upbitData,
-        // bithumb: bithumbData,
-        // binance: binanceData,
-        // okx: okxData,
+        bithumb: bithumbData,
+        binance: binanceData,
       };
     } catch (error) {
       this.logger.error('Failed to get markets:', error);
