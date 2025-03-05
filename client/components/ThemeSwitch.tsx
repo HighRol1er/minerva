@@ -36,7 +36,6 @@ export default function ThemeSwitch() {
       <SwitchPrimitive.Thumb
         className={cn(
           "pointer-events-none flex items-center justify-center rounded-full shadow-lg ring-0 h-6 w-6",
-          // "h-6 w-6",
           theme === "dark"
             ? "translate-x-7 bg-indigo-600"
             : "translate-x-0 bg-amber-400"
