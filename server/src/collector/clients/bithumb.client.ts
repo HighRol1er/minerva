@@ -12,7 +12,11 @@ import { RedisService } from 'src/redis/redis.service';
 import { krExchangeMarketFilter } from 'src/utils/market-filter.util';
 import { WebSocket } from 'ws';
 import { BithumbMarketResponse } from '../types/api-market-response.type';
-import { BithumbRawMessage, BithumbSubscribeMessageType } from '../types';
+import {
+  BithumbRawMessage,
+  BithumbSubscribeMessageType,
+  FilterdMessageType,
+} from '../types';
 import { krExchangeAssetSplitter } from 'src/utils/asset-splitter.util';
 import { formatChangeRate } from 'src/utils/number.util';
 import { bithumbSymbolSchema } from 'src/database/schema/bithumb';
@@ -23,8 +27,10 @@ export class BithumbClient implements OnModuleInit {
   protected ws: WebSocket;
   protected reconnectAttempts = 0;
   protected reconnectDelay = WEBSOCKET_CONFIG.RECONNECT.DELAY;
+  // endpoint
   protected readonly wsEndpoint = WEBSOCKET_ENDPOINTS.BITHUMB;
   protected readonly apiEndpoint = API_ENDPOINTS.BITHUMB;
+  // market list
   protected marketList: string[] = [];
   constructor(
     private readonly redisService: RedisService,
@@ -108,7 +114,7 @@ export class BithumbClient implements OnModuleInit {
       const { baseAsset, quoteAsset } = krExchangeAssetSplitter(rawMessage.cd);
       const redisKey = `${EXCHANGE_NAME.BITHUMB}-${baseAsset}-${quoteAsset}`;
 
-      const filteredMessage = {
+      const filteredMessage: FilterdMessageType = {
         exchange: EXCHANGE_NAME.BITHUMB,
         baseAsset,
         quoteAsset,
@@ -116,6 +122,7 @@ export class BithumbClient implements OnModuleInit {
         currentPrice: rawMessage.tp,
         changeRate: formatChangeRate(rawMessage.cr),
         tradeVolume: rawMessage.atp24h,
+        timestamp: rawMessage.ttms,
       };
 
       // console.log('filtered Message', filteredMessage);

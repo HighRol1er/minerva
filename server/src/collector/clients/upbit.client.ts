@@ -14,18 +14,18 @@ import { krExchangeAssetSplitter } from 'src/utils/asset-splitter.util';
 import { krExchangeMarketFilter } from 'src/utils/market-filter.util';
 import { formatChangeRate } from 'src/utils/number.util';
 import { WebSocket } from 'ws';
-import { UpbitRawMessage, UpbitSubscribeMessageType } from '../types';
+import {
+  UpbitRawMessage,
+  UpbitSubscribeMessageType,
+  FilterdMessageType,
+} from '../types';
 import { UpbitMarketResponse } from '../types/api-market-response.type';
 
 @Injectable()
 export class UpbitClient implements OnModuleInit {
-  // exchange name
   protected readonly exchangeName = EXCHANGE_NAME.UPBIT;
-  // logger
   protected readonly logger = new Logger(UpbitClient.name);
-  // websocket
   protected ws: WebSocket;
-  // reconnect
   protected reconnectAttempts = 0;
   protected reconnectDelay = WEBSOCKET_CONFIG.RECONNECT.DELAY;
   // endpoint
@@ -118,7 +118,7 @@ export class UpbitClient implements OnModuleInit {
       const { baseAsset, quoteAsset } = krExchangeAssetSplitter(rawMessage.cd);
       const redisKey = `${EXCHANGE_NAME.UPBIT}-${baseAsset}-${quoteAsset}`;
 
-      const filteredMessage = {
+      const filteredMessage: FilterdMessageType = {
         exchange: EXCHANGE_NAME.UPBIT,
         baseAsset,
         quoteAsset,
@@ -126,6 +126,7 @@ export class UpbitClient implements OnModuleInit {
         currentPrice: rawMessage.tp,
         changeRate: formatChangeRate(rawMessage.scr),
         tradeVolume: rawMessage.atp24h,
+        timestamp: rawMessage.ttms,
       };
 
       // console.log('filteredMessage', filteredMessage);

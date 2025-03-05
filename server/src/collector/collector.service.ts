@@ -8,6 +8,7 @@ import { ForexClient } from './clients/forex.client';
 import { UpbitClient } from './clients/upbit.client';
 import { ForexRate } from './types';
 import { AppGateway } from 'src/gateway/app.gateway';
+import { BithumbClient } from './clients/bithumb.client';
 @Injectable()
 export class CollectorService {
   private readonly logger = new Logger(CollectorService.name);
@@ -18,6 +19,7 @@ export class CollectorService {
     private readonly appGateway: AppGateway,
     private readonly forexClient: ForexClient,
     private readonly upbitClient: UpbitClient,
+    private readonly bithumbClient: BithumbClient,
   ) {}
 
   // @Cron(CronExpression.EVERY_10_SECONDS) // TEST
@@ -26,6 +28,7 @@ export class CollectorService {
     try {
       await Promise.all([
         this.upbitClient.collectUpbitMarket(),
+        this.bithumbClient.collectBithumbMarket(),
         // ... 다른 거래소
       ]);
       this.logger.log('Successfully collected market data from all exchanges');

@@ -8,6 +8,7 @@ import { REDIS_KEY } from 'src/common/constants';
 import { AppGateway } from 'src/gateway/app.gateway';
 import { ConsolidatedMarketData } from 'src/gateway/types/gateway.type';
 import { STALE_TIME } from 'src/common/constants/stale-time';
+import { FilterdMessageType } from 'src/collector/types';
 @Injectable()
 export class MarketStreamService implements OnModuleInit {
   private readonly logger = new Logger(MarketStreamService.name);
@@ -50,13 +51,16 @@ export class MarketStreamService implements OnModuleInit {
         const data = await this.redisService.get(key);
         if (!data) continue;
 
-        const symbolData = JSON.parse(data);
-
+        const symbolData: FilterdMessageType = JSON.parse(data);
+        if (!symbolData) continue;
         // NOTE: 임시로 12시간 이상 지난 데이터는 삭제
         // 현재로서는 이렇게 냅두고 배포했을 때 어떻게 될지 좀 지켜봐야겠음
         // 이 로직으로 충분한지 아니면 더 세세하게 해야될지.
         // 지금은 보류
-        if (currentTimestamp - symbolData.timestamp > STALE_TIME.HALF_DAY) {
+        if (
+          currentTimestamp - Number(symbolData.timestamp) >
+          STALE_TIME.HALF_DAY
+        ) {
           await this.redisService.del(key);
           this.logger.log(`Deleted stale data for ${key}`);
           continue;

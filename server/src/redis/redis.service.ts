@@ -24,12 +24,12 @@ export class RedisService implements OnModuleInit {
       this.logger.log('Redis connected successfully');
     } catch (error) {
       // 개발 환경에서는 에러 로깅을 생략
-      // if (this.configService.get('NODE_ENV') === 'development') {
-      //   this.logger.log(
-      //     'Redis is in development mode - continuing without Redis',
-      //   );
-      //   return;
-      // }
+      if (this.configService.get('NODE_ENV') === 'development') {
+        this.logger.log(
+          'Redis is in development mode - continuing without Redis',
+        );
+        return;
+      }
       // 프로덕션 환경에서는 에러를 출력하고 throw
       this.logger.error('Redis connection failed:', error);
       throw error;
