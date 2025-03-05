@@ -1,9 +1,9 @@
 import React from "react";
 
-export default function Home() {
+export default function Navbar() {
   return (
     <React.Fragment>
-      <div className="bg-blue-100">Home</div>
+      <div className="bg-red-100">Header</div>
     </React.Fragment>
   );
 }

@@ -1,9 +1,9 @@
 import React from "react";
 
-export default function Home() {
+export default function Footer() {
   return (
     <React.Fragment>
-      <div className="bg-blue-100">Home</div>
+      <div className="bg-red-100">Footer</div>
     </React.Fragment>
   );
 }
