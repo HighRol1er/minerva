@@ -10,8 +10,8 @@ import {
 import { DrizzleClient } from 'src/database/database.module';
 import { binanceSymbolSchema } from 'src/database/schema/binance';
 import { RedisService } from 'src/redis/redis.service';
-import { binanceAssetSplitter } from 'src/utils/asset-splitter.util';
-import { binanceMarketFilter } from 'src/utils/market-filter.util';
+import { binanceAssetSplitter } from 'src/common/utils/asset-splitter.util';
+import { binanceMarketFilter } from 'src/common/utils/market-filter.util';
 import { WebSocket } from 'ws';
 import { BinanceSubscribeMessageType, FilterdMessageType } from '../types';
 import {
@@ -111,34 +111,34 @@ export class BinanceClient implements OnModuleInit {
 
   private async parseMessage(data: Buffer) {
     try {
-      const rawData = JSON.parse(data.toString());
+      const rawMessage = JSON.parse(data.toString());
 
       // Binance Websocket Validation
       // 구독 확인 메시지는 건너뛰기
-      if (rawData.result === null && rawData.id === 1) {
+      if (rawMessage.result === null && rawMessage.id === 1) {
         return;
       }
 
       // 실제 ticker 데이터만 처리
-      if (!rawData.s) {
+      if (!rawMessage.s) {
         // symbol이 없으면 건너뛰기
         return;
       }
 
-      const { baseAsset, quoteAsset } = binanceAssetSplitter(rawData.s);
+      const { baseAsset, quoteAsset } = binanceAssetSplitter(rawMessage.s);
       const redisKey = `${EXCHANGE_NAME.BINANCE}-${baseAsset}-${quoteAsset}`;
 
       const filteredMessage: FilterdMessageType = {
         exchange: EXCHANGE_NAME.BINANCE,
         baseAsset,
         quoteAsset,
-        symbol: rawData.s,
-        currentPrice: rawData.c,
-        changeRate: rawData.P,
-        tradeVolume: rawData.q,
-        timestamp: Date.now(),
+        symbol: rawMessage.s,
+        currentPrice: rawMessage.c,
+        changeRate: rawMessage.P,
+        tradeVolume: rawMessage.q,
+        timestamp: rawMessage.E,
       };
-
+      // console.log('rawMessage', rawMessage);
       // console.log('filteredMessage', filteredMessage);
       await this.redisService.set(redisKey, JSON.stringify(filteredMessage));
     } catch (error) {

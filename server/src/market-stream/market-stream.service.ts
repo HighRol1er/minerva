@@ -39,26 +39,36 @@ export class MarketStreamService implements OnModuleInit {
     }
   }
 
+  // *****************
+  // *   Broadcast   *
+  // *****************
+
   @Interval(1000)
   async processMarketData() {
     try {
+      const currentTimestamp = Date.now();
       const consolidatedMarketData: ConsolidatedMarketData = {};
       // Get all ticker data from Redis
       const upbitKeys = await this.redisService.getKeys(REDIS_KEY.UPBIT_KEY);
-      const currentTimestamp = Date.now();
+      const bithumbKeys = await this.redisService.getKeys(
+        REDIS_KEY.BITHUMB_KEY,
+      );
+      const binanceKeys = await this.redisService.getKeys(
+        REDIS_KEY.BINANCE_KEY,
+      );
       // Process Upbit data
       for (const key of upbitKeys) {
         const data = await this.redisService.get(key);
         if (!data) continue;
 
-        const symbolData: FilterdMessageType = JSON.parse(data);
-        if (!symbolData) continue;
+        const upbitSymbolData: FilterdMessageType = JSON.parse(data);
+        if (!upbitSymbolData) continue;
         // NOTE: 임시로 12시간 이상 지난 데이터는 삭제
         // 현재로서는 이렇게 냅두고 배포했을 때 어떻게 될지 좀 지켜봐야겠음
         // 이 로직으로 충분한지 아니면 더 세세하게 해야될지.
         // 지금은 보류
         if (
-          currentTimestamp - Number(symbolData.timestamp) >
+          currentTimestamp - Number(upbitSymbolData.timestamp) >
           STALE_TIME.HALF_DAY
         ) {
           await this.redisService.del(key);
@@ -68,24 +78,60 @@ export class MarketStreamService implements OnModuleInit {
 
         if (
           !consolidatedMarketData[
-            `${symbolData.baseAsset}-${symbolData.quoteAsset}`
+            `${upbitSymbolData.baseAsset}-${upbitSymbolData.quoteAsset}`
           ]
         ) {
           consolidatedMarketData[
-            `${symbolData.baseAsset}-${symbolData.quoteAsset}`
+            `${upbitSymbolData.baseAsset}-${upbitSymbolData.quoteAsset}`
           ] = {};
         }
 
         consolidatedMarketData[
-          `${symbolData.baseAsset}-${symbolData.quoteAsset}`
+          `${upbitSymbolData.baseAsset}-${upbitSymbolData.quoteAsset}`
         ].upbit = {
-          price: symbolData.currentPrice,
-          volume: symbolData.tradeVolume,
-          change24h: symbolData.changeRate,
-          timestamp: symbolData.timestamp,
+          price: upbitSymbolData.currentPrice,
+          volume: upbitSymbolData.tradeVolume,
+          change24h: upbitSymbolData.changeRate,
+          timestamp: upbitSymbolData.timestamp,
         };
       }
-      // Cache the premium data
+      // Process Bithumb data
+      for (const key of bithumbKeys) {
+        const data = await this.redisService.get(key);
+        if (!data) continue;
+
+        const bithumbSymbolData: FilterdMessageType = JSON.parse(data);
+        if (!bithumbSymbolData) continue;
+
+        if (
+          currentTimestamp - Number(bithumbSymbolData.timestamp) >
+          STALE_TIME.HALF_DAY
+        ) {
+          await this.redisService.del(key);
+          this.logger.log(`Deleted stale data for ${key}`);
+          continue;
+        }
+
+        if (
+          !consolidatedMarketData[
+            `${bithumbSymbolData.baseAsset}-${bithumbSymbolData.quoteAsset}`
+          ]
+        ) {
+          consolidatedMarketData[
+            `${bithumbSymbolData.baseAsset}-${bithumbSymbolData.quoteAsset}`
+          ] = {};
+        }
+
+        consolidatedMarketData[
+          `${bithumbSymbolData.baseAsset}-${bithumbSymbolData.quoteAsset}`
+        ].bithumb = {
+          price: bithumbSymbolData.currentPrice,
+          volume: bithumbSymbolData.tradeVolume,
+          change24h: bithumbSymbolData.changeRate,
+          timestamp: bithumbSymbolData.timestamp,
+        };
+      }
+
       await this.redisService.set(
         REDIS_KEY.CONSOLIDATED_MARKET_DATA_KEY,
         JSON.stringify(consolidatedMarketData),
@@ -115,7 +161,9 @@ export class MarketStreamService implements OnModuleInit {
       throw error;
     }
   }
-
+  // *****************
+  // *  FOREX_RATE   *
+  // *****************
   async getForexRateFromRedis() {
     try {
       const [usdKrw, usdJpy, usdEur, usdGbp, usdCny] = await Promise.all([

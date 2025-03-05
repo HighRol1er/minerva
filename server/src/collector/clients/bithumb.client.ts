@@ -9,7 +9,7 @@ import {
 } from 'src/common/constants';
 import { DrizzleClient } from 'src/database/database.module';
 import { RedisService } from 'src/redis/redis.service';
-import { krExchangeMarketFilter } from 'src/utils/market-filter.util';
+import { krExchangeMarketFilter } from 'src/common/utils/market-filter.util';
 import { WebSocket } from 'ws';
 import { BithumbMarketResponse } from '../types/api-market-response.type';
 import {
@@ -17,8 +17,8 @@ import {
   BithumbSubscribeMessageType,
   FilterdMessageType,
 } from '../types';
-import { krExchangeAssetSplitter } from 'src/utils/asset-splitter.util';
-import { formatChangeRate } from 'src/utils/number.util';
+import { krExchangeAssetSplitter } from 'src/common/utils/asset-splitter.util';
+import { formatChangeRate } from 'src/common/utils/number.util';
 import { bithumbSymbolSchema } from 'src/database/schema/bithumb';
 @Injectable()
 export class BithumbClient implements OnModuleInit {
