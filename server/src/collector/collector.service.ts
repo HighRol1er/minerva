@@ -9,6 +9,7 @@ import { UpbitClient } from './clients/upbit.client';
 import { ForexRate } from './types';
 import { AppGateway } from 'src/gateway/app.gateway';
 import { BithumbClient } from './clients/bithumb.client';
+import { BinanceClient } from './clients/binance.client';
 @Injectable()
 export class CollectorService {
   private readonly logger = new Logger(CollectorService.name);
@@ -20,6 +21,7 @@ export class CollectorService {
     private readonly forexClient: ForexClient,
     private readonly upbitClient: UpbitClient,
     private readonly bithumbClient: BithumbClient,
+    private readonly binanceClient: BinanceClient,
   ) {}
 
   // @Cron(CronExpression.EVERY_10_SECONDS) // TEST
@@ -29,6 +31,7 @@ export class CollectorService {
       await Promise.all([
         this.upbitClient.collectUpbitMarket(),
         this.bithumbClient.collectBithumbMarket(),
+        this.binanceClient.collectBinanceMarket(),
         // ... 다른 거래소
       ]);
       this.logger.log('Successfully collected market data from all exchanges');
@@ -39,8 +42,8 @@ export class CollectorService {
   }
 
   // TODO: 현재 Redis에 저장 뿐 아니라 boardcast도 하고 있어서 추후 리팩토링 해야 함
-  // @Cron('*/60 * * * * *') // PROD
-  @Cron(CronExpression.EVERY_10_SECONDS) // TEST
+  @Cron('*/60 * * * * *') // PROD
+  // @Cron(CronExpression.EVERY_10_SECONDS) // TEST
   async collectForexRate() {
     try {
       const exchangeRates = await Promise.allSettled([
