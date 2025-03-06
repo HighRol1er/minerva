@@ -6,36 +6,39 @@ import Link from "next/link";
 export default function Navbar() {
   return (
     <header>
-      <div className="flex items-center justify-between p-4 border-b border-teal-500/70">
-        <h1 className="text-2xl font-bold font-orbitron">MINERVA</h1>
+      <div className="flex items-center justify-between p-4 border-b-1 border-teal-500/70">
+        {/* <h1 className="text-2xl font-bold font-orbitron">MINERVA</h1> */}
+        <h1 className="text-2xl font-bold font-orbitron bg-gradient-to-b from-teal-400 via-blue-400 to-indigo-600 text-transparent bg-clip-text bg-[length:100%_200%] animate-gradient-y">
+          MINERVA
+        </h1>
         <nav
           className="hidden sm:flex items-center gap-4"
           aria-label="Main Navigation"
         >
           <Link href={ROUTES.DASHBOARD}>
-            <span className="font-exo relative hover:text-teal-500 after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
+            <span className="font-exo font-semibold relative hover:text-teal-400 after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
               Dashboard
             </span>
           </Link>
           <Link href={ROUTES.MARKET_CAP}>
-            <span className="font-exo relative hover:text-teal-500 after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
+            <span className="font-exo font-semibold relative hover:text-teal-400 after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
               Market Cap
             </span>
           </Link>
           <Link href={ROUTES.EXCHANGE}>
             {" "}
-            <span className="font-exo relative hover:text-teal-500 after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
+            <span className="font-exo font-semibold relative hover:text-teal-400 after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
               Exchange
             </span>
           </Link>
           <Link href={ROUTES.NEWS}>
             {" "}
-            <span className="font-exo relative hover:text-teal-500 after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
+            <span className="font-exo font-semibold relative hover:text-teal-400 after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
               News
             </span>
           </Link>
           <Link href={ROUTES.ABOUT}>
-            <span className="font-exo relative hover:text-teal-500 after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
+            <span className="font-exo font-semibold relative hover:text-teal-400 after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
               About
             </span>
           </Link>

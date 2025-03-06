@@ -1,7 +1,7 @@
 export const ROUTES = {
   DASHBOARD: "/",
-  MARKET_CAP: "/market-cap",
-  EXCHANGE: "/exchange",
+  MARKET_CAP: "/marketcap",
+  EXCHANGE: "/exchanges",
   NEWS: "/news",
   ABOUT: "/about",
 };
