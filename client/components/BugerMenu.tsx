@@ -2,17 +2,13 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-
+import { ROUTES } from "@/routes";
 import { MenuIcon, X } from "lucide-react";
 import Link from "next/link";
-import { ROUTES } from "@/routes";
-import { Button } from "./ui/button";
 
 export default function BugerMenu() {
   return (
@@ -33,56 +29,33 @@ export default function BugerMenu() {
 
           <div className="flex-1 px-4">
             <nav className="flex flex-col space-y-4 mt-4">
-              <Link
-                href={ROUTES.DASHBOARD}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"
-              >
-                <span className="font-exo font-semibold">
-                  <DrawerClose>Dashboard</DrawerClose>
+              <Link href={ROUTES.DASHBOARD}>
+                <span className="font-exo font-semibold relative hover:text-[#28f4af] after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
+                  Dashboard
                 </span>
               </Link>
-              <Link
-                href={ROUTES.MARKET_CAP}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"
-              >
-                <span className="font-exo font-semibold">
+              <Link href={ROUTES.MARKET_CAP}>
+                <span className="font-exo font-semibold relative hover:text-[#28f4af] after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
                   <DrawerClose>Market Cap</DrawerClose>
                 </span>
               </Link>
-              <Link
-                href={ROUTES.EXCHANGE}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"
-              >
-                <span className="font-exo font-semibold">
+              <Link href={ROUTES.EXCHANGE}>
+                <span className="font-exo font-semibold relative hover:text-[#28f4af] after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
                   <DrawerClose>Exchange</DrawerClose>
                 </span>
               </Link>
-              <Link
-                href={ROUTES.NEWS}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"
-              >
-                <span className="font-exo font-semibold">
+              <Link href={ROUTES.NEWS}>
+                <span className="font-exo font-semibold relative hover:text-[#28f4af] after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
                   <DrawerClose>News</DrawerClose>
                 </span>
               </Link>
-              <Link
-                href={ROUTES.ABOUT}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"
-              >
-                <span className="font-exo font-semibold">
+              <Link href={ROUTES.ABOUT}>
+                <span className="font-exo font-semibold relative hover:text-[#28f4af] after:block after:w-0 after:h-[1px] after:bg-gradient-to-r after:from-teal-500 after:to-indigo-500 after:absolute after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full">
                   <DrawerClose>About</DrawerClose>
                 </span>
               </Link>
             </nav>
           </div>
-
-          <DrawerFooter>
-            <DrawerClose>
-              <Button variant="outline" className="w-full">
-                Close
-              </Button>
-            </DrawerClose>
-          </DrawerFooter>
         </div>
       </DrawerContent>
     </Drawer>

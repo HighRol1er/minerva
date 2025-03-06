@@ -14,14 +14,14 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
+  --background: oklch(0 0 0);
+  --foreground: oklch(1 0 0);
+  --card: oklch(0.05 0 0);
+  --card-foreground: oklch(1 0 0);
+  --popover: oklch(0 0 0);
+  --popover-foreground: oklch(1 0 0);
+  --primary: 160 90% 56%;
+  --primary-foreground: 0 0% 0%;
   --secondary: oklch(0.968 0.007 247.896);
   --secondary-foreground: oklch(0.208 0.042 265.755);
   --muted: oklch(0.968 0.007 247.896);
@@ -47,6 +47,9 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  --mint: 160 90% 56%;
+  --mint-rgb: 40, 244, 175;
+  --mint-hex: #28f4af;
 }
 
 .dark {
@@ -56,8 +59,8 @@
   --card-foreground: oklch(0.984 0.003 247.858);
   --popover: oklch(0.129 0.042 264.695);
   --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.984 0.003 247.858);
-  --primary-foreground: oklch(0.208 0.042 265.755);
+  --primary: 160 90% 56%;
+  --primary-foreground: 0 0% 0%;
   --secondary: oklch(0.279 0.041 260.031);
   --secondary-foreground: oklch(0.984 0.003 247.858);
   --muted: oklch(0.279 0.041 260.031);
@@ -125,14 +128,14 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 160 90% 56%;
+    --primary-foreground: 0 0% 0%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
@@ -159,8 +162,8 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
+    --primary: 160 90% 56%;
+    --primary-foreground: 0 0% 0%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
@@ -177,5 +180,85 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+  }
+
+  body {
+    background-color: black;
+    color: white;
+  }
+}
+
+@layer utilities {
+  .text-mint {
+    color: #28f4af;
+    color: hsl(var(--mint));
+  }
+
+  .bg-mint {
+    background-color: #28f4af;
+    background-color: hsl(var(--mint));
+  }
+
+  .border-mint {
+    border-color: #28f4af;
+    border-color: hsl(var(--mint));
+  }
+
+  .ring-mint {
+    --tw-ring-color: #28f4af;
+    --tw-ring-color: hsl(var(--mint));
+  }
+
+  .fill-mint {
+    fill: #28f4af;
+    fill: hsl(var(--mint));
+  }
+
+  .stroke-mint {
+    stroke: #28f4af;
+    stroke: hsl(var(--mint));
+  }
+  .text-primary {
+    color: #28f4af;
+    color: hsl(var(--primary));
+  }
+
+  .bg-primary {
+    background-color: #28f4af;
+    background-color: hsl(var(--primary));
+  }
+
+  .border-primary {
+    border-color: #28f4af;
+    border-color: hsl(var(--primary));
+  }
+
+  .ring-primary {
+    --tw-ring-color: #28f4af;
+    --tw-ring-color: hsl(var(--primary));
+  }
+
+  .fill-primary {
+    fill: #28f4af;
+    fill: hsl(var(--primary));
+  }
+
+  .stroke-primary {
+    stroke: #28f4af;
+    stroke: hsl(var(--primary));
+  }
+  /* 플레이스홀더 스타일 추가 */
+  .placeholder-sm::placeholder {
+    font-size: 0.875rem; /* text-sm 크기 */
+    line-height: 1.25rem;
+  }
+
+  .placeholder-xs::placeholder {
+    font-size: 0.75rem; /* text-xs 크기 */
+    line-height: 1rem;
+  }
+
+  .placeholder-text-gray::placeholder {
+    color: #9ca3af; /* text-gray-400 색상 */
   }
 }

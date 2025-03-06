@@ -1,1 +1,7 @@
 dump.rdb
+etc/node_modules
+etc/package-lock.json
+etc/pnpm-lock.yaml
+
+
+
