@@ -1,20 +1,17 @@
 import { Logger } from '@nestjs/common';
-import {
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  WebSocketGateway,
-  WebSocketServer,
-} from '@nestjs/websockets';
+import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ActiveUsersData, ConsolidatedMarketData } from './types/gateway.type';
 import { WS_EVENTS } from 'src/common/constants';
 import { ForexRate } from 'src/collector/types';
 @WebSocketGateway({
   cors: {
-    origin: [process.env.CLIENT_URL_DEV, process.env.CLIENT_URL_PROD],
+    // XXX: 현재 임시방편으로 CORS 해제함 추후 수정 필요
+    // origin: [process.env.CLIENT_URL_DEV, process.env.CLIENT_URL_PROD],
+    origin: '*',
     credentials: true,
   },
-  transports: ['websocket'], // TODO: 추후 polling 적용
+  transports: ['websocket'],
   path: '/socket.io/', // ws://localhost:3000/socket.io/로 접속
   pingInterval: 1000,
   pingTimeout: 3000,
@@ -32,9 +29,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // 클라이언트 ID를 Set에 추가
       this.connectedClients.add(client.id);
       this.emitActiveUsers();
-      this.logger.log(
-        `Client connected: ${client.id}, Total connections: ${this.connectedClients.size}`,
-      );
+      this.logger.log(`Client connected: ${client.id}, Total connections: ${this.connectedClients.size}`);
     } catch (error) {
       this.logger.error('Connection handling failed:', error);
       // 에러가 발생해도 연결은 유지
@@ -47,9 +42,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // 클라이언트 ID를 Set에서 제거
     this.connectedClients.delete(client.id);
     this.emitActiveUsers();
-    this.logger.log(
-      `Client disconnected: ${client.id}. Total connections: ${this.connectedClients.size}`,
-    );
+    this.logger.log(`Client disconnected: ${client.id}. Total connections: ${this.connectedClients.size}`);
   }
 
   private emitActiveUsers() {
@@ -65,8 +58,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  // TODO: 이벤트 이름 별로임
-  // 코인데이터를 전송하는 이벤트가 될거같음 market-stream작성하면서 바꿀 예정
   emitConsolidatedMarketData(data: ConsolidatedMarketData) {
     try {
       this.server.emit(WS_EVENTS.CONSOLIDATED_MARKET_DATA, data);
