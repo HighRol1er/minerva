@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -13,9 +13,10 @@ import {
 import {
   ReferenceExchange,
   ComparisonExchange,
-} from "@/components/CompareExchange";
+} from "@/components/ExchangeSelector";
 import { useWebSocketQuery } from "./hooks/useWebSocketQuery";
 import { SOCKET_EVENTS } from "./constants/SocketEvent";
+import { io } from "socket.io-client";
 const invoices = [
   {
     name: "BTC",
@@ -68,6 +69,7 @@ const invoices = [
   },
 ];
 export default function Home() {
+  const [marketData, setMarketData] = useState<any>(null);
   // WebSocket 데이터 구독
   // const {
   //   data: marketData,
@@ -79,10 +81,11 @@ export default function Home() {
   //   SOCKET_EVENTS.CONSOLIDATED_MARKET_DATA,
   //   {
   //     refetchOnWindowFocus: false,
-  //     // staleTime: Infinity,
+  //     // staleTime: Infinity,//뭔지좀 찾아보자
   //   }
   // );
   // console.log("Market data in component:", marketData);
+
   return (
     <React.Fragment>
       <div className="flex-col w-full px-4 sm:px-6 md:px-8 lg:px-12 sm:max-w-[640px] md:max-w-[768px] lg:max-w-[1024px] xl:max-w-[1280px] mx-auto">
