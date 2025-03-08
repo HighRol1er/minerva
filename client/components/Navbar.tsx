@@ -51,10 +51,7 @@ export default function Navbar() {
           </div> */}
         </div>
       </div>
-      <div className="border-b border-[#28f4af]/70 p-1 mb-6">
-        {" "}
-        ₩ 1,400 ￥9,786
-      </div>
+      {/* <div className="border-b border-[#28f4af]/70 p-1 "> ₩ 1,400 ￥9,786</div> */}
     </header>
   );
 }

@@ -69,7 +69,6 @@ const invoices = [
   },
 ];
 export default function Home() {
-  const [marketData, setMarketData] = useState<any>(null);
   // WebSocket 데이터 구독
   // const {
   //   data: marketData,
