@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "Coin image downloader",
   "scripts": {
-    "start": "ts-node imagedownloader.ts",
-    "resize": "ts-node imageresizer.ts"
+    "start": "ts-node image-downloader.ts",
+    "binance": "ts-node binance-img-downloader.ts",
+    "resize": "ts-node imageresizer.ts",
+    "market:all": "pnpm market:upbit && pnpm market:binance && pnpm market:bithumb && pnpm market:coinbase && pnpm market:okx && pnpm market:kraken && pnpm market:bybit"
   },
   "dependencies": {
     "axios": "^1.6.7",

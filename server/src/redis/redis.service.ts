@@ -9,9 +9,7 @@ export class RedisService implements OnModuleInit {
 
   constructor(private configService: ConfigService) {
     const host =
-      this.configService.get('NODE_ENV') === 'production'
-        ? this.configService.get('REDIS_HOST', 'redis')
-        : 'localhost';
+      this.configService.get('NODE_ENV') === 'production' ? this.configService.get('REDIS_HOST', 'redis') : 'localhost';
 
     this.client = createClient({
       url: `redis://${host}:${this.configService.get('REDIS_PORT', '6379')}`,
@@ -25,9 +23,7 @@ export class RedisService implements OnModuleInit {
     } catch (error) {
       // 개발 환경에서는 에러 로깅을 생략
       if (this.configService.get('NODE_ENV') === 'development') {
-        this.logger.log(
-          'Redis is in development mode - continuing without Redis',
-        );
+        this.logger.log('Redis is in development mode - continuing without Redis');
         return;
       }
       // 프로덕션 환경에서는 에러를 출력하고 throw

@@ -1,6 +1,7 @@
 import axios from "axios";
-import fs from "fs/promises";
-import path from "path";
+import * as fs from "fs/promises";
+import * as path from "path";
+import { upbitMarketData } from "./scripts/market/upbit-market-data";
 
 interface UpbitFee {
   currency: string;
@@ -33,37 +34,16 @@ async function ensureDirectoryExists(dirPath: string) {
   }
 }
 
-async function loadFeeFile(filePath: string): Promise<string[]> {
-  const content = await fs.readFile(filePath, "utf-8");
-  const data = JSON.parse(content);
-
-  if (data.currencies) {
-    // Upbit fees
-    return data.currencies.map((fee: UpbitFee) => fee.currency);
-  } else {
-    // Binance fees
-    return data.map((fee: BinanceFee) => fee.symbol);
-  }
-}
-
 async function main() {
   // 저장 디렉토리 생성
   const saveDir = path.join(process.cwd(), "..", "client", "public", "coins");
   await ensureDirectoryExists(saveDir);
 
-  // 수수료 파일 로드
-  const upbitFees = await loadFeeFile(
-    path.join(process.cwd(), "exchanges", "upbit-fees.json")
-  );
-  const binanceFees = await loadFeeFile(
-    path.join(process.cwd(), "exchanges", "binance-fees.json")
-  );
-
-  // 중복 제거를 위한 Set (undefined, null, KRW 제외)
+  // upbit-market-data.ts에서 baseAsset 추출
   const coins = new Set(
-    [...upbitFees, ...binanceFees].filter(
-      (symbol) => symbol && symbol !== "KRW"
-    )
+    upbitMarketData
+      .map((market) => market.baseAsset)
+      .filter((symbol) => symbol && symbol !== ("KRW" as any))
   );
 
   console.log(`Found ${coins.size} unique coins`);
@@ -73,16 +53,9 @@ async function main() {
     try {
       const savePath = path.join(saveDir, `${coin.toLowerCase()}.png`);
 
-      // 업비트 이미지 시도
+      // 업비트 이미지만 다운로드
       const upbitUrl = `https://static.upbit.com/logos/${coin}.png`;
-      const upbitSuccess = await downloadImage(upbitUrl, savePath);
-
-      // 업비트 다운로드 실패시 바이낸스 이미지 시도
-      if (!upbitSuccess) {
-        // 바이낸스는 소문자로 처리
-        const binanceUrl = `https://bin.bnbstatic.com/static/images/coin/${coin.toLowerCase()}.png`;
-        await downloadImage(binanceUrl, savePath);
-      }
+      await downloadImage(upbitUrl, savePath);
 
       // 요청 간 간격 추가
       await new Promise((resolve) => setTimeout(resolve, 100));
