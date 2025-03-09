@@ -71,21 +71,21 @@ const invoices = [
 export default function Home() {
   const { referenceExchange, comparisonExchange } = useExchangeSelector();
   // WebSocket 데이터 구독
-  const {
-    data: marketData,
-    isLoading,
-    error,
-  } = useWebSocketQuery(
-    ["marketData"],
-    process.env.NEXT_PUBLIC_WS_URL || "http://localhost:3000",
-    SOCKET_EVENTS.CONSOLIDATED_MARKET_DATA,
-    {
-      refetchOnWindowFocus: false,
-      // staleTime: Infinity,// 이렇게하면 절대 staleTime이 되지 않음 근데
-      // 실시간 데이터인데 곧장 stale로 취급해야되는거 아닌가 싶네요~
-    }
-  );
-  console.log("Market data in component:", marketData);
+  // const {
+  //   data: marketData,
+  //   isLoading,
+  //   error,
+  // } = useWebSocketQuery(
+  //   ["marketData"],
+  //   process.env.NEXT_PUBLIC_WS_URL || "http://localhost:3000",
+  //   SOCKET_EVENTS.CONSOLIDATED_MARKET_DATA,
+  //   {
+  //     refetchOnWindowFocus: false,
+  //     // staleTime: Infinity,// 이렇게하면 절대 staleTime이 되지 않음 근데
+  //     // 실시간 데이터인데 곧장 stale로 취급해야되는거 아닌가 싶네요~
+  //   }
+  // );
+  // console.log("Market data in component:", marketData);
 
   return (
     <React.Fragment>
