@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -16,7 +15,8 @@ import {
 } from "@/components/ExchangeSelector";
 import { useWebSocketQuery } from "./hooks/useWebSocketQuery";
 import { SOCKET_EVENTS } from "./constants/SocketEvent";
-import { io } from "socket.io-client";
+import useExchangeSelector from "./store/useExchangeSelector";
+import ForexBar from "@/components/ForexBar";
 const invoices = [
   {
     name: "BTC",
@@ -69,24 +69,27 @@ const invoices = [
   },
 ];
 export default function Home() {
+  const { referenceExchange, comparisonExchange } = useExchangeSelector();
   // WebSocket 데이터 구독
-  // const {
-  //   data: marketData,
-  //   isLoading,
-  //   error,
-  // } = useWebSocketQuery(
-  //   ["marketData"],
-  //   process.env.NEXT_PUBLIC_WS_URL || "http://localhost:3000",
-  //   SOCKET_EVENTS.CONSOLIDATED_MARKET_DATA,
-  //   {
-  //     refetchOnWindowFocus: false,
-  //     // staleTime: Infinity,//뭔지좀 찾아보자
-  //   }
-  // );
-  // console.log("Market data in component:", marketData);
+  const {
+    data: marketData,
+    isLoading,
+    error,
+  } = useWebSocketQuery(
+    ["marketData"],
+    process.env.NEXT_PUBLIC_WS_URL || "http://localhost:3000",
+    SOCKET_EVENTS.CONSOLIDATED_MARKET_DATA,
+    {
+      refetchOnWindowFocus: false,
+      // staleTime: Infinity,// 이렇게하면 절대 staleTime이 되지 않음 근데
+      // 실시간 데이터인데 곧장 stale로 취급해야되는거 아닌가 싶네요~
+    }
+  );
+  console.log("Market data in component:", marketData);
 
   return (
     <React.Fragment>
+      <ForexBar />
       <div className="flex-col w-full px-4 sm:px-6 md:px-8 lg:px-12 sm:max-w-[640px] md:max-w-[768px] lg:max-w-[1024px] xl:max-w-[1280px] mx-auto">
         <div className="flex gap-2 p-4 items-center">
           <ReferenceExchange />
@@ -101,12 +104,14 @@ export default function Home() {
           {/* 테이블 내용 */}
           <div className="relative bg-black rounded-md overflow-hidden">
             <Table>
-              <TableCaption>End</TableCaption>
+              {/* <TableCaption>End of the world</TableCaption> */}
               <TableHeader>
-                <TableRow className="border-b border-[#28f4af]/30">
+                <TableRow className="border-b border-[#28f4af]/30 hover:bg-transparent">
                   <TableHead className="">Name</TableHead>
-                  <TableHead className="">Price(1)</TableHead>
-                  <TableHead className="">Price(2)</TableHead>
+                  <TableHead className="">Price({referenceExchange})</TableHead>
+                  <TableHead className="">
+                    Price({comparisonExchange})
+                  </TableHead>
                   <TableHead className="text-right">Changes</TableHead>
                   <TableHead className="text-right">Volume</TableHead>
                   <TableHead className="text-right ">Premium</TableHead>
@@ -118,7 +123,7 @@ export default function Home() {
                     key={invoice.name}
                     className="border-b border-blue-500/30 hover:bg-blue-950/30 transition-colors duration-200"
                   >
-                    <TableCell className="font-medium text-white">
+                    <TableCell className="font-medium">
                       {invoice.name}
                     </TableCell>
                     <TableCell>{invoice.price}</TableCell>

@@ -1,12 +1,11 @@
 import BugerMenu from "@/components/BugerMenu";
-import ThemeSwitch from "@/components/ThemeSwitch";
 import { ROUTES } from "@/routes";
 import Link from "next/link";
 
 export default function Navbar() {
   return (
     <header>
-      <div className="flex items-center justify-between p-4 border-b-1 border-[#28f4af]/70">
+      <div className="flex items-center justify-between p-4 border-[#28f4af]/70">
         <h1 className="text-2xl font-bold font-orbitron bg-gradient-to-b from-[#28f4af] via-indigo-400 to-indigo-600 text-transparent bg-clip-text bg-[length:100%_200%] animate-gradient-y">
           MINERVA
         </h1>
@@ -46,12 +45,8 @@ export default function Navbar() {
           <div className="sm:hidden mt-1">
             <BugerMenu />
           </div>
-          {/* <div className="hidden sm:block">
-            <ThemeSwitch />
-          </div> */}
         </div>
       </div>
-      {/* <div className="border-b border-[#28f4af]/70 p-1 "> ₩ 1,400 ￥9,786</div> */}
     </header>
   );
 }
